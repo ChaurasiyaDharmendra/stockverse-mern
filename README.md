@@ -1,7 +1,19 @@
-<<<<<<< HEAD
-# Zerodha
-Please try to implement the project on your own before proceeding to the lectures &amp; code.
-=======
-# stockverse-mern
-StockVerse is a full-stack stock trading dashboard inspired by Zerodha, built using the MERN stack. It allows users to view holdings, positions, orders, and simulate trading with an interactive UI.
->>>>>>> 8c916e4bed03b72e3129bc4bad6e24148fe68ebe
+# StockVerse 🚀
+
+StockVerse is a full-stack stock trading dashboard inspired by Zerodha, built using the MERN stack.
+
+## 🔥 Features
+- User Signup & Login
+- Dashboard with holdings & positions
+- Orders & portfolio tracking
+- Interactive UI
+
+## 🛠 Tech Stack
+- Frontend: React.js
+- Backend: Node.js, Express.js
+- Database: MongoDB
+
+## ⚡ How to Run
+```bash
+npm install
+npm start
