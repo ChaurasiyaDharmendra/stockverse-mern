@@ -16,7 +16,7 @@ const Menu = () => {
   
   const handleLogout = () => {
     localStorage.removeItem("token"); 
-    window.location.href = "http://localhost:3000"; 
+    window.location.href = "https://stockverse-mern-5mxg.vercel.app";
   };
 
   const menuClass = "menu";
