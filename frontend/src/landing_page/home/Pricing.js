@@ -10,10 +10,10 @@ function Pricing() {
             We pioneered the concept of discount broking and price transparency
             in India. Flat fees and no hidden charges.
           </p>
-          <a href="" style={{ textDecoration: "none" }}>
+          <button style={{ textDecoration: "none", background: "none", border: "none", cursor: "pointer", color: "inherit", padding: 0 }}>
             See Pricing{" "}
             <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-          </a>
+          </button>
         </div>
         <div className="col-2"></div>
         <div className="col-6  mb-5">
