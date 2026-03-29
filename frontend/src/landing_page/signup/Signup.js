@@ -20,7 +20,7 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("https://stockverse-mern.onrender.com"/signup", {
+      const res = await fetch("https://stockverse-mern.onrender.com/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -95,3 +95,4 @@ const Signup = () => {
 };
 
 export default Signup;
+
