@@ -133,7 +133,7 @@ const Signup = () => {
         alert("Signup successful ✅");
 
         // 🔥 FINAL: dashboard redirect
-        window.location.href = "https://stockverse-dashboard.vercel.app";
+        window.location.href = "https://stockverse-mern-z6hc.vercel.app";
       } else {
         alert(data.message || "Signup failed ❌");
       }
