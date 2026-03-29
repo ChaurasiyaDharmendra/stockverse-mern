@@ -106,7 +106,7 @@ const Signup = () => {
     password: "",
   });
 
-  // handle input change
+  // input change
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -114,7 +114,7 @@ const Signup = () => {
     });
   };
 
-  // handle form submit
+  // form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -132,8 +132,8 @@ const Signup = () => {
       if (res.ok) {
         alert("Signup successful ✅");
 
-        // ✅ redirect to frontend home page
-        window.location.href = "/";
+        // 🔥 FINAL: dashboard redirect
+        window.location.href = "https://stockverse-dashboard.vercel.app";
       } else {
         alert(data.message || "Signup failed ❌");
       }
@@ -197,4 +197,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
