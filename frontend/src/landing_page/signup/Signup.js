@@ -20,7 +20,7 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3002/signup", {
+      const res = await fetch("https://stockverse-mern.onrender.com"/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,7 +33,7 @@ const Signup = () => {
       alert(data.message);
 
       // 🔥 redirect to dashboard
-      window.location.href = "http://localhost:3001";
+      window.location.href = "https://stockverse-mern.onrender.com";
 
     } catch (err) {
       console.log(err);
