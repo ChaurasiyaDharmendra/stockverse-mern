@@ -14,11 +14,16 @@ const Menu = () => {
   };
 
   
-  const handleLogout = () => {
-    localStorage.removeItem("token"); 
+  //const handleLogout = () => {
+  //  localStorage.removeItem("token"); 
     //window.location.href = "https://stockverse-mern-5mxg.vercel.app";
-    window.location.href = "https://stockverse-mern-5mxg.vercel.app/signup";
-  };
+  //  window.location.href = "https://stockverse-mern-5mxg.vercel.app/signup";
+ // };
+
+ const handleLogout = () => {
+  localStorage.removeItem("token");
+  window.location.href = "https://stockverse-mern-5mxg.vercel.app";
+};
 
   const menuClass = "menu";
   const activeMenuClass = "menu selected";
