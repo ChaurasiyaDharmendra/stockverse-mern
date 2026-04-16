@@ -38,3 +38,59 @@ code {
   border-radius: 10px;
   border: none;
 }
+
+.signup-container {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #eef2f3, #dfe9f3);
+}
+
+.signup-box {
+  background: white;
+  padding: 40px;
+  width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.signup-box h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.signup-box input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.signup-box input:focus {
+  outline: none;
+  border-color: #387ed1;
+}
+
+.signup-box button {
+  padding: 12px;
+  background: #387ed1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.signup-box button:hover {
+  background: #2f6cb3;
+}
+
+.loading-text {
+  text-align: center;
+  font-size: 13px;
+  color: gray;
+}
