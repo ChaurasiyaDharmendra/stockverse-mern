@@ -1,8 +1,9 @@
+/* ========== BASE ========== */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -12,26 +13,88 @@ code {
     monospace;
 }
 
-.nav-link{
-  margin-left: 40px;
+/* ========== NAVBAR ========== */
+.navbar {
+  background-color: #0f172a !important;
 }
 
-#supportHero{
+.nav-link {
+  color: white !important;
+  margin-left: 40px;
+  transition: 0.3s;
+}
+
+.nav-link:hover {
+  color: #3b82f6 !important;
+}
+
+/* ========== HERO SECTION ========== */
+.hero-section {
+  background: linear-gradient(to right, #e0f2fe, #f8fafc);
+  padding: 60px 0;
+}
+
+.hero-section h1 {
+  font-weight: 700;
+  font-size: 48px;
+  color: #0f172a;
+}
+
+.hero-section p {
+  color: #475569;
+  font-size: 18px;
+}
+
+.hero-section button {
+  border-radius: 10px;
+  padding: 12px 30px;
+  transition: 0.3s;
+}
+
+.hero-section button:hover {
+  transform: translateY(-2px);
+}
+
+/* ========== IMAGE ========== */
+img {
+  max-width: 80%;
+  display: block;
+  margin: 0 auto;
+}
+
+/* ========== SECTIONS ========== */
+.section-white {
+  background-color: #ffffff;
+  padding: 80px 0;
+}
+
+.section-gray {
+  background-color: #f1f5f9;
+  padding: 80px 0;
+}
+
+.section-blue {
+  background-color: #eff6ff;
+  padding: 80px 0;
+}
+
+/* ========== SUPPORT PAGE ========== */
+#supportHero {
   background-color: rgb(56, 126, 209);
   color: white;
 }
 
-#supportHero a{
+#supportHero a {
   color: white;
 }
 
-#supportWrapper{
+#supportWrapper {
   display: flex;
   justify-content: space-between;
   margin: 0 150px;
 }
 
-#supportHero input{
+#supportHero input {
   padding: 20px 50px;
   width: 100%;
   font-size: 20px;
@@ -39,6 +102,7 @@ code {
   border: none;
 }
 
+/* ========== SIGNUP PAGE ========== */
 .signup-container {
   height: 90vh;
   display: flex;
@@ -93,4 +157,163 @@ code {
   text-align: center;
   font-size: 13px;
   color: gray;
+}
+
+/* ===== FOOTER STYLE ===== */
+
+footer {
+  background-color: #0f172a !important;
+  color: white;
+  padding-top: 40px;
+}
+
+/* headings */
+footer p {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* links */
+footer a {
+  display: block;
+  color: #cbd5e1;
+  text-decoration: none;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+footer a:hover {
+  color: #3b82f6;
+}
+
+/* remove underline */
+footer a {
+  text-decoration: none !important;
+}
+
+/* bottom text (IMPORTANT FIX) */
+footer .text-muted {
+  color: #e2e8f0 !important;
+  line-height: 1.6;
+}
+
+/* spacing between paragraphs */
+footer .text-muted p {
+  margin-bottom: 12px;
+}
+
+/* logo size */
+footer img {
+  width: 120px !important;
+  margin-bottom: 10px;
+}
+
+footer .text-muted {
+  line-height: 1.6;
+  color: #94a3b8;
+}
+
+footer a {
+  display: block;
+  color: #cbd5e1;
+  text-decoration: none;
+  margin-bottom: 6px;
+  transition: 0.2s;
+}
+
+footer a:hover {
+  color: #3b82f6;
+}
+
+footer i {
+  font-size: 18px;
+  cursor: pointer;
+  color: #cbd5e1;
+  transition: 0.2s;
+}
+
+footer i:hover {
+  color: #3b82f6;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAVBAR */
+.navbar {
+  background-color: #0f172a !important;
+}
+
+.nav-link {
+  color: white !important;
+  margin-left: 40px;
+}
+
+.nav-link:hover {
+  color: #3b82f6 !important;
+}
+
+/* ================= SIGNUP PAGE ================= */
+
+.signup-container {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.signup-box {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 40px;
+  width: 350px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  color: white;
+}
+
+.signup-box h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.signup-box input {
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  background: transparent;
+  color: white;
+}
+
+.signup-box input::placeholder {
+  color: #94a3b8;
+}
+
+.signup-box input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.signup-box button {
+  padding: 12px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.signup-box button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(59,130,246,0.4);
 }
