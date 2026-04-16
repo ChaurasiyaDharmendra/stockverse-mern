@@ -842,3 +842,42 @@ hr {
   background-color: rgb(212, 212, 212);
 }
 
+/* DARK TOPBAR */
+.dark-topbar {
+  background-color: #0f172a;
+  color: white;
+}
+
+/* index text */
+.dark-topbar .index {
+  color: #cbd5f5;
+}
+
+/* points */
+.dark-topbar .index-points {
+  color: #f87171;
+}
+
+/* percent */
+.dark-topbar .percent {
+  color: #4ade80;
+}
+
+/* menu links */
+.dark-topbar a {
+  color: white !important;
+}
+
+.dark-topbar a:hover {
+  color: #3b82f6 !important;
+}
+
+/* user circle */
+.dark-topbar .userid {
+  background-color: #1e293b;
+  color: white;
+}
+
+.topbar-container {
+  border-bottom: none !important;
+}
