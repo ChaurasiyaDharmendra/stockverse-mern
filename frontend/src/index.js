@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";//rect-router-dom ke liabackentkapage
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";   // 👈 add
+
 import "./index.css";
 
 import HomePage from "./landing_page/home/HomePage";
@@ -14,10 +16,21 @@ import NotFound from "./landing_page/NotFound";
 import Navbar from "./landing_page/Navbar";
 import Footer from "./landing_page/Footer";
 
+/* 🔥 BACKEND WAKE-UP COMPONENT */
+function WakeUpServer() {
+  useEffect(() => {
+    fetch("https://stockverse-mern.onrender.com");
+  }, []);
+  return null;
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <BrowserRouter>
+    <WakeUpServer />   {/* 👈 ADD */}
     <Navbar />
+
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/signup" element={<Signup />} />
@@ -27,6 +40,7 @@ root.render(
       <Route path="/support" element={<SupportPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
+
     <Footer />
   </BrowserRouter>
 );
