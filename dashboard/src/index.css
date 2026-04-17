@@ -601,31 +601,30 @@ hr {
   padding: 10px 20px;
   border-right: 1px solid rgb(224, 224, 224);
   box-sizing: border-box;
+
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  gap: 30px;   /* 🔥 ye important hai */
 }
 
 .nifty {
-  flex-basis: 40%;
+  flex-basis: auto;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  z-index: -2;
+  gap: 6px;
 }
 
 .sensex {
-  flex-basis: 40%;
+  flex-basis: auto;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  gap: 6px;
 }
 
 .nifty > *,
 .sensex > * {
   margin-right: 8px;
 }
-
 .index {
   font-size: 0.8rem;
   font-weight: 500;
