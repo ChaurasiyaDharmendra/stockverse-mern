@@ -566,7 +566,7 @@ hr {
   margin-top: 6%;
 }
 
-/*.topbar-container {
+.topbar-container {
   width: 100%;
   height: 10vh;
   display: flex;
@@ -574,7 +574,7 @@ hr {
   box-shadow: 0px 0px 4px 2px rgb(236, 235, 235);
   box-sizing: border-box;
   z-index: 9;
-} 
+}
 
 .indices-container {
   flex-basis: 32%;
@@ -586,13 +586,13 @@ hr {
   align-items: center;
   justify-content: space-around;
 }
-*/
+
 .nifty {
   flex-basis: 40%;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-
+  z-index: -2;
 }
 
 .sensex {
@@ -802,138 +802,44 @@ hr {
   color: rgb(105, 105, 105);
 }
 
-/* ===== TOPBAR CONTAINER ===== */
-.topbar-container {
+/* sudo selectors */
+.search:focus {
+  outline: none;
+}
+
+.list li:hover {
+  cursor: move;
+  background-color: #f3f3f3;
+}
+
+.list li:hover > .actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 40px;
-  background-color: #0b1f3a;
-  border-bottom: 1px solid #1e2f4d;
+  cursor: move;
 }
 
-/* ===== INDICES SECTION ===== */
-.indices-container {
-  display: flex;
-  gap: 40px;
+/* TODO */
+.list li::before {
+  content: "";
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
-/* ===== NIFTY & SENSEX ===== */
-.nifty,
-.sensex {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ===== TEXT ===== */
-.index {
-  font-size: 14px;
-  color: #ffffff;
-  margin: 0;
-}
-
-.index-points {
-  font-size: 14px;
-  color: #ff4d4f;
-  margin: 0;
-}
-
-.percent {
-  font-size: 13px;
-  color: #aaa;
-  margin: 0;
-}
-
-/* ===== MENU CONTAINER ===== */
-.menu-container {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-}
-
-/* ===== MENUS WRAPPER ===== */
-.menus {
-  display: flex;
-  align-items: center;
-}
-
-/* ===== UL ===== */
-.menus ul {
-  display: flex;
-  list-style: none;
-  gap: 30px;
-  margin: 0;
-  padding: 0;
-}
-
-/* ===== MENU TEXT ===== */
-.menu {
-  color: white;
-  font-size: 14px;
-  margin: 0;
+.watchlist-number ul li:hover {
+  color: rgb(245, 104, 52);
   cursor: pointer;
-  transition: 0.3s;
+  background: rgb(243, 243, 243);
 }
 
-/* ===== HOVER ===== */
-.menu:hover {
-  color: #3ea6ff;
-}
-
-/* ===== ACTIVE ===== */
-.menu.selected {
-  color: #ff5722;
-}
-
-/* ===== PROFILE ===== */
-.profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-left: 20px;
+.settings:hover {
   cursor: pointer;
 }
 
-/* ===== AVATAR ===== */
-.avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #d8b4fe;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-weight: bold;
+.action:hover {
+  background-color: rgb(212, 212, 212);
 }
 
-/* ===== USERNAME ===== */
-.username {
-  color: white;
-  margin: 0;
-}
 
-/* ===== HR ===== */
-.menus hr {
-  margin: 0 20px;
-  border: 0.5px solid #444;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .topbar-container {
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .indices-container {
-    justify-content: center;
-  }
-
-  .menu-container {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
