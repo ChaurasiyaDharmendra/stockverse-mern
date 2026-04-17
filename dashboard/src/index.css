@@ -604,23 +604,20 @@ hr {
 
   display: flex;
   align-items: center;
-  gap: 30px;   /* 🔥 ye important hai */
+  gap: 40px;   /* ✅ NIFTY + SENSEX side by side */
 }
 
 .nifty {
-  flex-basis: auto;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .sensex {
-  flex-basis: auto;
   display: flex;
   align-items: center;
   gap: 6px;
 }
-
 .nifty > *,
 .sensex > * {
   margin-right: 8px;
