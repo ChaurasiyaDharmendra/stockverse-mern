@@ -17,19 +17,15 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-
-
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
-  console.log("Signup Data 👉", name, email, password);
+  console.log("Signup Data ", name, email, password);
 
-  
   res.json({
-    message: "Signup successful 🚀",
+    message: "Signup successful ",
   });
 });
-
 
 // app.get("/addHoldings", async (req, res) => {
 //   let tempHoldings = [ ... same code ... ]
@@ -57,13 +53,20 @@ app.post("/newOrder", async (req, res) => {
     mode: req.body.mode,
   });
 
-  newOrder.save();
+  await newOrder.save();
 
   res.send("Order saved!");
 });
 
+app.get("/getOrders", async (req, res) => {
+  let allOrders = await OrdersModel.find({});
+  res.json(allOrders);
+});
+
 app.listen(PORT, () => {
   console.log("App started!");
+
   mongoose.connect(uri);
+
   console.log("DB started!");
 });
