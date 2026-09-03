@@ -1,8 +1,6 @@
-
-
 import React, { useState } from "react";
 
-/* 🔥 TIMEOUT FUNCTION */
+// Timeout function
 const fetchWithTimeout = (url, options, timeout = 8000) => {
   return Promise.race([
     fetch(url, options),
@@ -30,7 +28,6 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
@@ -53,10 +50,10 @@ const Signup = () => {
             "https://stockverse-mern-z6hc.vercel.app";
         }, 1500);
       } else {
-        alert(data.message || "Signup failed ❌");
+        alert(data.message || "Signup failed");
       }
     } catch (err) {
-      alert("Server slow hai, please try again ⏳");
+      alert("Server slow hai, please try again");
     } finally {
       setLoading(false);
     }
@@ -65,7 +62,7 @@ const Signup = () => {
   return (
     <div className="signup-container">
       <form onSubmit={handleSubmit} className="signup-box">
-        <h2>Create Account 🚀</h2>
+        <h2>Create your account</h2>
 
         <input
           type="text"
@@ -100,7 +97,7 @@ const Signup = () => {
 
         {loading && (
           <p className="loading-text">
-            Server starting... please wait ⏳
+            Please wait...
           </p>
         )}
       </form>
