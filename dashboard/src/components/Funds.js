@@ -10,7 +10,7 @@ const Funds = () => {
 
   const API = "https://stockverse-mern.onrender.com";
 
-  // ==================== GET FUNDS ====================
+  // ==================== GET BALANCE ====================
   const fetchFunds = async () => {
     try {
       const res = await axios.get(`${API}/funds`);
@@ -89,9 +89,9 @@ const Funds = () => {
 
   return (
     <>
-      {/* ==================== TOP BUTTONS ==================== */}
+      {/* ==================== FUNDS HEADER ==================== */}
       <div className="funds">
-        <p>Instant, zero-cost fund transfers with UPI</p>
+        <p>Manage your funds</p>
 
         <button
           className="btn btn-green"
@@ -118,18 +118,17 @@ const Funds = () => {
 
       {/* ==================== MESSAGE ==================== */}
       {message && (
-        <div
+        <p
           style={{
             textAlign: "center",
             marginTop: "15px",
-            fontSize: "14px",
           }}
         >
           {message}
-        </div>
+        </p>
       )}
 
-      {/* ==================== ADD FUNDS BOX ==================== */}
+      {/* ==================== ADD FUNDS ==================== */}
       {showAdd && (
         <div
           style={{
@@ -172,7 +171,7 @@ const Funds = () => {
         </div>
       )}
 
-      {/* ==================== WITHDRAW BOX ==================== */}
+      {/* ==================== WITHDRAW ==================== */}
       {showWithdraw && (
         <div
           style={{
@@ -219,91 +218,27 @@ const Funds = () => {
         </div>
       )}
 
-      {/* ==================== FUNDS DETAILS ==================== */}
+      {/* ==================== BALANCE ==================== */}
       <div className="row">
         <div className="col">
           <span>
-            <p>Equity</p>
+            <p>Funds</p>
           </span>
 
           <div className="table">
             <div className="data">
-              <p>Available margin</p>
+              <p>Available Balance</p>
               <p className="imp colored">
-                {balance.toFixed(2)}
+                ₹{balance.toFixed(2)}
               </p>
             </div>
 
             <div className="data">
-              <p>Used margin</p>
-              <p className="imp">0.00</p>
-            </div>
-
-            <div className="data">
-              <p>Available cash</p>
+              <p>Withdrawable Balance</p>
               <p className="imp">
-                {balance.toFixed(2)}
+                ₹{balance.toFixed(2)}
               </p>
             </div>
-
-            <hr />
-
-            <div className="data">
-              <p>Opening Balance</p>
-              <p>{balance.toFixed(2)}</p>
-            </div>
-
-            <div className="data">
-              <p>Payin</p>
-              <p>{balance.toFixed(2)}</p>
-            </div>
-
-            <div className="data">
-              <p>SPAN</p>
-              <p>0.00</p>
-            </div>
-
-            <div className="data">
-              <p>Delivery margin</p>
-              <p>0.00</p>
-            </div>
-
-            <div className="data">
-              <p>Exposure</p>
-              <p>0.00</p>
-            </div>
-
-            <div className="data">
-              <p>Options premium</p>
-              <p>0.00</p>
-            </div>
-
-            <hr />
-
-            <div className="data">
-              <p>Collateral (Liquid funds)</p>
-              <p>0.00</p>
-            </div>
-
-            <div className="data">
-              <p>Collateral (Equity)</p>
-              <p>0.00</p>
-            </div>
-
-            <div className="data">
-              <p>Total Collateral</p>
-              <p>0.00</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="col">
-          <div className="commodity">
-            <p>You don't have a commodity account</p>
-
-            <button className="btn btn-blue">
-              Open Account
-            </button>
           </div>
         </div>
       </div>
