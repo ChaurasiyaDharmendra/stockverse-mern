@@ -34,6 +34,7 @@ app.post("/signup", async (req, res) => {
     res.status(200).json({
       message: "Signup successful",
     });
+
   } catch (error) {
     console.log("Signup Error:", error);
 
@@ -51,6 +52,7 @@ app.get("/allHoldings", async (req, res) => {
     const allHoldings = await HoldingsModel.find({});
 
     res.json(allHoldings);
+
   } catch (error) {
     console.log("Holdings Error:", error);
 
@@ -68,6 +70,7 @@ app.get("/allPositions", async (req, res) => {
     const allPositions = await PositionsModel.find({});
 
     res.json(allPositions);
+
   } catch (error) {
     console.log("Positions Error:", error);
 
@@ -82,35 +85,51 @@ app.get("/allPositions", async (req, res) => {
 
 app.post("/newOrder", async (req, res) => {
   try {
+
     const { name, qty, price, mode } = req.body;
 
     const quantity = Number(qty);
     const stockPrice = Number(price);
 
-    if (!name || !quantity || !stockPrice || !mode) {
+    if (
+      !name ||
+      !quantity ||
+      quantity <= 0 ||
+      !stockPrice ||
+      stockPrice <= 0 ||
+      !mode
+    ) {
       return res.status(400).json({
         message: "Invalid order details",
       });
     }
 
-    // ==================== BUY ====================
+    if (mode !== "BUY" && mode !== "SELL") {
+      return res.status(400).json({
+        message: "Invalid order mode",
+      });
+    }
+
+
+    // =====================================================
+    // BUY
+    // =====================================================
 
     if (mode === "BUY") {
+
+      // ---------- HOLDINGS ----------
+
       const existingHolding = await HoldingsModel.findOne({
         name: name,
       });
 
       if (existingHolding) {
-        // Existing quantity
-        const oldQty = Number(existingHolding.qty);
 
-        // Existing average price
+        const oldQty = Number(existingHolding.qty);
         const oldAvg = Number(existingHolding.avg);
 
-        // New total quantity
         const newQty = oldQty + quantity;
 
-        // Calculate new average price
         const newAvg =
           (oldAvg * oldQty + stockPrice * quantity) / newQty;
 
@@ -119,8 +138,9 @@ app.post("/newOrder", async (req, res) => {
         existingHolding.price = stockPrice;
 
         await existingHolding.save();
+
       } else {
-        // Create new holding
+
         const newHolding = new HoldingsModel({
           name: name,
           qty: quantity,
@@ -132,12 +152,61 @@ app.post("/newOrder", async (req, res) => {
 
         await newHolding.save();
       }
+
+
+      // ---------- POSITIONS ----------
+
+      const existingPosition = await PositionsModel.findOne({
+        name: name,
+      });
+
+      if (existingPosition) {
+
+        const oldQty = Number(existingPosition.qty);
+        const oldAvg = Number(existingPosition.avg);
+
+        const newQty = oldQty + quantity;
+
+        const newAvg =
+          (oldAvg * oldQty + stockPrice * quantity) / newQty;
+
+        existingPosition.qty = newQty;
+        existingPosition.avg = newAvg;
+        existingPosition.price = stockPrice;
+
+        const pnl =
+          (stockPrice - newAvg) * newQty;
+
+        existingPosition.isLoss = pnl < 0;
+
+        await existingPosition.save();
+
+      } else {
+
+        const newPosition = new PositionsModel({
+          product: "CNC",
+          name: name,
+          qty: quantity,
+          avg: stockPrice,
+          price: stockPrice,
+          net: "0.00%",
+          day: "0.00%",
+          isLoss: false,
+        });
+
+        await newPosition.save();
+      }
     }
 
 
-    // ==================== SELL ====================
+    // =====================================================
+    // SELL
+    // =====================================================
 
     if (mode === "SELL") {
+
+      // ---------- HOLDINGS ----------
+
       const existingHolding = await HoldingsModel.findOne({
         name: name,
       });
@@ -158,23 +227,61 @@ app.post("/newOrder", async (req, res) => {
 
       const newQty = oldQty - quantity;
 
-      // Update current price
       existingHolding.price = stockPrice;
 
       if (newQty === 0) {
-        // If all shares are sold, remove holding
+
         await HoldingsModel.deleteOne({
           _id: existingHolding._id,
         });
+
       } else {
+
         existingHolding.qty = newQty;
 
         await existingHolding.save();
       }
+
+
+      // ---------- POSITIONS ----------
+
+      const existingPosition = await PositionsModel.findOne({
+        name: name,
+      });
+
+      if (existingPosition) {
+
+        const oldPositionQty = Number(existingPosition.qty);
+
+        const newPositionQty =
+          oldPositionQty - quantity;
+
+        if (newPositionQty <= 0) {
+
+          await PositionsModel.deleteOne({
+            _id: existingPosition._id,
+          });
+
+        } else {
+
+          existingPosition.qty = newPositionQty;
+          existingPosition.price = stockPrice;
+
+          const pnl =
+            (stockPrice - Number(existingPosition.avg)) *
+            newPositionQty;
+
+          existingPosition.isLoss = pnl < 0;
+
+          await existingPosition.save();
+        }
+      }
     }
 
 
-    // ==================== SAVE ORDER ====================
+    // =====================================================
+    // SAVE ORDER
+    // =====================================================
 
     const newOrder = new OrdersModel({
       name: name,
@@ -185,11 +292,17 @@ app.post("/newOrder", async (req, res) => {
 
     await newOrder.save();
 
+
+    // =====================================================
+    // RESPONSE
+    // =====================================================
+
     res.status(200).json({
       message: `${mode} order placed successfully`,
     });
 
   } catch (error) {
+
     console.log("Order Error:", error);
 
     res.status(500).json({
@@ -203,10 +316,13 @@ app.post("/newOrder", async (req, res) => {
 
 app.get("/getOrders", async (req, res) => {
   try {
+
     const allOrders = await OrdersModel.find({});
 
     res.json(allOrders);
+
   } catch (error) {
+
     console.log("Orders Error:", error);
 
     res.status(500).json({
@@ -221,11 +337,13 @@ app.get("/getOrders", async (req, res) => {
 mongoose
   .connect(uri)
   .then(() => {
+
     console.log("MongoDB connected successfully");
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
+
   })
   .catch((error) => {
     console.log("MongoDB connection error:", error);
