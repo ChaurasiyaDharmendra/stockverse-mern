@@ -34,7 +34,6 @@ app.post("/signup", async (req, res) => {
     res.status(200).json({
       message: "Signup successful",
     });
-
   } catch (error) {
     console.log("Signup Error:", error);
 
@@ -52,7 +51,6 @@ app.get("/allHoldings", async (req, res) => {
     const allHoldings = await HoldingsModel.find({});
 
     res.json(allHoldings);
-
   } catch (error) {
     console.log("Holdings Error:", error);
 
@@ -70,7 +68,6 @@ app.get("/allPositions", async (req, res) => {
     const allPositions = await PositionsModel.find({});
 
     res.json(allPositions);
-
   } catch (error) {
     console.log("Positions Error:", error);
 
@@ -85,11 +82,12 @@ app.get("/allPositions", async (req, res) => {
 
 app.post("/newOrder", async (req, res) => {
   try {
-
     const { name, qty, price, mode } = req.body;
 
     const quantity = Number(qty);
     const stockPrice = Number(price);
+
+    // ---------- VALIDATION ----------
 
     if (
       !name ||
@@ -131,7 +129,8 @@ app.post("/newOrder", async (req, res) => {
         const newQty = oldQty + quantity;
 
         const newAvg =
-          (oldAvg * oldQty + stockPrice * quantity) / newQty;
+          (oldAvg * oldQty + stockPrice * quantity) /
+          newQty;
 
         existingHolding.qty = newQty;
         existingHolding.avg = newAvg;
@@ -168,7 +167,8 @@ app.post("/newOrder", async (req, res) => {
         const newQty = oldQty + quantity;
 
         const newAvg =
-          (oldAvg * oldQty + stockPrice * quantity) / newQty;
+          (oldAvg * oldQty + stockPrice * quantity) /
+          newQty;
 
         existingPosition.qty = newQty;
         existingPosition.avg = newAvg;
@@ -251,10 +251,12 @@ app.post("/newOrder", async (req, res) => {
 
       if (existingPosition) {
 
-        const oldPositionQty = Number(existingPosition.qty);
+        const oldPositionQty =
+          Number(existingPosition.qty);
 
         const newPositionQty =
           oldPositionQty - quantity;
+
 
         if (newPositionQty <= 0) {
 
@@ -346,5 +348,7 @@ mongoose
 
   })
   .catch((error) => {
+
     console.log("MongoDB connection error:", error);
+
   });
