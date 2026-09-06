@@ -3,16 +3,18 @@ import axios from "axios";
 
 const Funds = () => {
   const [balance, setBalance] = useState(0);
+  const [amount, setAmount] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
-  const [amount, setAmount] = useState("");
+  const [message, setMessage] = useState("");
 
-  const API_URL = "https://stockverse-mern.onrender.com";
+  const API = "https://stockverse-mern.onrender.com";
 
+  // ==================== GET FUNDS ====================
   const fetchFunds = async () => {
     try {
-      const res = await axios.get(`${API_URL}/funds`);
-      setBalance(Number(res.data.balance));
+      const res = await axios.get(`${API}/funds`);
+      setBalance(Number(res.data.balance) || 0);
     } catch (error) {
       console.log("Funds Error:", error);
     }
@@ -22,62 +24,81 @@ const Funds = () => {
     fetchFunds();
   }, []);
 
+  // ==================== ADD FUNDS ====================
   const handleAddFunds = async () => {
     const value = Number(amount);
 
     if (!value || value <= 0) {
-      alert("Please enter a valid amount");
+      setMessage("Please enter a valid amount");
       return;
     }
 
     try {
-      const res = await axios.post(`${API_URL}/addFunds`, {
+      const res = await axios.post(`${API}/addFunds`, {
         amount: value,
       });
 
-      alert(res.data.message);
-
+      setBalance(Number(res.data.balance));
       setAmount("");
       setShowAdd(false);
-      fetchFunds();
+      setMessage(res.data.message);
     } catch (error) {
-      alert(error.response?.data?.message || "Unable to add funds");
+      setMessage(
+        error.response?.data?.message || "Unable to add funds"
+      );
     }
   };
 
+  // ==================== WITHDRAW FUNDS ====================
   const handleWithdraw = async () => {
     const value = Number(amount);
 
     if (!value || value <= 0) {
-      alert("Please enter a valid amount");
+      setMessage("Please enter a valid amount");
+      return;
+    }
+
+    if (value > balance) {
+      setMessage("Insufficient balance");
       return;
     }
 
     try {
-      const res = await axios.post(`${API_URL}/withdrawFunds`, {
+      const res = await axios.post(`${API}/withdrawFunds`, {
         amount: value,
       });
 
-      alert(res.data.message);
-
+      setBalance(Number(res.data.balance));
       setAmount("");
       setShowWithdraw(false);
-      fetchFunds();
+      setMessage(res.data.message);
     } catch (error) {
-      alert(error.response?.data?.message || "Unable to withdraw funds");
+      setMessage(
+        error.response?.data?.message || "Unable to withdraw funds"
+      );
     }
+  };
+
+  // ==================== CLOSE ====================
+  const closeBox = () => {
+    setShowAdd(false);
+    setShowWithdraw(false);
+    setAmount("");
+    setMessage("");
   };
 
   return (
     <>
+      {/* ==================== TOP BUTTONS ==================== */}
       <div className="funds">
         <p>Instant, zero-cost fund transfers with UPI</p>
 
         <button
           className="btn btn-green"
           onClick={() => {
-            setAmount("");
             setShowAdd(true);
+            setShowWithdraw(false);
+            setMessage("");
           }}
         >
           Add funds
@@ -86,14 +107,119 @@ const Funds = () => {
         <button
           className="btn btn-blue"
           onClick={() => {
-            setAmount("");
             setShowWithdraw(true);
+            setShowAdd(false);
+            setMessage("");
           }}
         >
           Withdraw
         </button>
       </div>
 
+      {/* ==================== MESSAGE ==================== */}
+      {message && (
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "15px",
+            fontSize: "14px",
+          }}
+        >
+          {message}
+        </div>
+      )}
+
+      {/* ==================== ADD FUNDS BOX ==================== */}
+      {showAdd && (
+        <div
+          style={{
+            width: "350px",
+            margin: "25px auto",
+            padding: "25px",
+            border: "1px solid #ddd",
+            background: "#fff",
+          }}
+        >
+          <h3>Add Funds</h3>
+
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              margin: "15px 0",
+              boxSizing: "border-box",
+            }}
+          />
+
+          <button
+            className="btn btn-green"
+            onClick={handleAddFunds}
+          >
+            Add
+          </button>
+
+          <button
+            className="btn btn-blue"
+            onClick={closeBox}
+            style={{ marginLeft: "10px" }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+
+      {/* ==================== WITHDRAW BOX ==================== */}
+      {showWithdraw && (
+        <div
+          style={{
+            width: "350px",
+            margin: "25px auto",
+            padding: "25px",
+            border: "1px solid #ddd",
+            background: "#fff",
+          }}
+        >
+          <h3>Withdraw Funds</h3>
+
+          <p>
+            Available Balance: ₹{balance.toFixed(2)}
+          </p>
+
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              margin: "15px 0",
+              boxSizing: "border-box",
+            }}
+          />
+
+          <button
+            className="btn btn-blue"
+            onClick={handleWithdraw}
+          >
+            Withdraw
+          </button>
+
+          <button
+            className="btn btn-green"
+            onClick={closeBox}
+            style={{ marginLeft: "10px" }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+
+      {/* ==================== FUNDS DETAILS ==================== */}
       <div className="row">
         <div className="col">
           <span>
@@ -181,76 +307,6 @@ const Funds = () => {
           </div>
         </div>
       </div>
-
-      {/* ADD FUNDS */}
-
-      {showAdd && (
-        <div className="fund-modal">
-          <div className="fund-modal-box">
-            <h3>Add Funds</h3>
-
-            <input
-              type="number"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-
-            <div>
-              <button
-                className="btn btn-green"
-                onClick={handleAddFunds}
-              >
-                Add
-              </button>
-
-              <button
-                className="btn btn-blue"
-                onClick={() => setShowAdd(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* WITHDRAW FUNDS */}
-
-      {showWithdraw && (
-        <div className="fund-modal">
-          <div className="fund-modal-box">
-            <h3>Withdraw Funds</h3>
-
-            <p>
-              Available balance: ₹{balance.toFixed(2)}
-            </p>
-
-            <input
-              type="number"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-
-            <div>
-              <button
-                className="btn btn-green"
-                onClick={handleWithdraw}
-              >
-                Withdraw
-              </button>
-
-              <button
-                className="btn btn-blue"
-                onClick={() => setShowWithdraw(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
