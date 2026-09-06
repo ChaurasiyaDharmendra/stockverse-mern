@@ -1,15 +1,5 @@
 import React, { useState } from "react";
 
-// Timeout function
-const fetchWithTimeout = (url, options, timeout = 8000) => {
-  return Promise.race([
-    fetch(url, options),
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout")), timeout)
-    ),
-  ]);
-};
-
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -28,10 +18,11 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
 
     try {
-      const res = await fetchWithTimeout(
+      const res = await fetch(
         "https://stockverse-mern.onrender.com/signup",
         {
           method: "POST",
@@ -44,16 +35,22 @@ const Signup = () => {
 
       const data = await res.json();
 
-      if (res.ok) {
-        setTimeout(() => {
-          window.location.href =
-            "https://stockverse-mern-z6hc.vercel.app";
-        }, 1500);
-      } else {
-        alert(data.message || "Signup failed");
+      if (!res.ok) {
+        throw new Error(data.message || "Signup failed");
       }
+
+      alert("Signup successful!");
+
+      window.location.href =
+        "https://stockverse-mern-z6hc.vercel.app";
     } catch (err) {
-      alert("Server slow hai, please try again");
+      console.error("Signup Error:", err);
+
+      if (err.name === "TypeError") {
+        alert("Unable to connect to server. Please try again.");
+      } else {
+        alert(err.message || "Signup failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
