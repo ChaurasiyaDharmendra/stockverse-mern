@@ -17,10 +17,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-// =====================================================
-// SIGNUP
-// =====================================================
+// ==================== SIGNUP ====================
 
 app.post("/signup", async (req, res) => {
   try {
@@ -46,10 +43,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-
-// =====================================================
-// HOLDINGS
-// =====================================================
+// ==================== HOLDINGS ====================
 
 app.get("/allHoldings", async (req, res) => {
   try {
@@ -65,10 +59,7 @@ app.get("/allHoldings", async (req, res) => {
   }
 });
 
-
-// =====================================================
-// POSITIONS
-// =====================================================
+// ==================== POSITIONS ====================
 
 app.get("/allPositions", async (req, res) => {
   try {
@@ -84,10 +75,107 @@ app.get("/allPositions", async (req, res) => {
   }
 });
 
+// ==================== GET FUNDS ====================
 
-// =====================================================
-// NEW ORDER
-// =====================================================
+app.get("/funds", async (req, res) => {
+  try {
+    let funds = await FundsModel.findOne({});
+
+    if (!funds) {
+      funds = new FundsModel({
+        balance: 0,
+      });
+
+      await funds.save();
+    }
+
+    res.json({
+      balance: Number(funds.balance),
+    });
+  } catch (error) {
+    console.log("Funds Error:", error);
+
+    res.status(500).json({
+      message: "Error fetching funds",
+    });
+  }
+});
+
+// ==================== ADD FUNDS ====================
+
+app.post("/addFunds", async (req, res) => {
+  try {
+    const amount = Number(req.body.amount);
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        message: "Enter a valid amount",
+      });
+    }
+
+    let funds = await FundsModel.findOne({});
+
+    if (!funds) {
+      funds = new FundsModel({
+        balance: 0,
+      });
+    }
+
+    funds.balance = Number(funds.balance) + amount;
+
+    await funds.save();
+
+    res.status(200).json({
+      message: `₹${amount.toFixed(2)} added successfully`,
+      balance: Number(funds.balance),
+    });
+  } catch (error) {
+    console.log("Add Funds Error:", error);
+
+    res.status(500).json({
+      message: "Unable to add funds",
+    });
+  }
+});
+
+// ==================== WITHDRAW FUNDS ====================
+
+app.post("/withdrawFunds", async (req, res) => {
+  try {
+    const amount = Number(req.body.amount);
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        message: "Enter a valid amount",
+      });
+    }
+
+    const funds = await FundsModel.findOne({});
+
+    if (!funds || Number(funds.balance) < amount) {
+      return res.status(400).json({
+        message: "Insufficient balance",
+      });
+    }
+
+    funds.balance = Number(funds.balance) - amount;
+
+    await funds.save();
+
+    res.status(200).json({
+      message: `₹${amount.toFixed(2)} withdrawn successfully`,
+      balance: Number(funds.balance),
+    });
+  } catch (error) {
+    console.log("Withdraw Error:", error);
+
+    res.status(500).json({
+      message: "Unable to withdraw funds",
+    });
+  }
+});
+
+// ==================== NEW ORDER ====================
 
 app.post("/newOrder", async (req, res) => {
   try {
@@ -117,17 +205,14 @@ app.post("/newOrder", async (req, res) => {
       });
     }
 
-    // Total order value
-    const totalAmount = quantity * stockPrice;
+    const totalAmount = stockPrice * quantity;
 
-
-    // =================================================
+    // =====================================================
     // BUY
-    // =================================================
+    // =====================================================
 
     if (mode === "BUY") {
-
-      // ---------- CHECK FUNDS ----------
+      // ---------- CHECK BALANCE ----------
 
       let funds = await FundsModel.findOne({});
 
@@ -141,16 +226,19 @@ app.post("/newOrder", async (req, res) => {
 
       const currentBalance = Number(funds.balance);
 
+      // ---------- INSUFFICIENT BALANCE ----------
+
       if (currentBalance < totalAmount) {
         return res.status(400).json({
-          message: `Insufficient funds. Required ₹${totalAmount.toFixed(
+          message: `Insufficient balance. Please add funds first. Required: ₹${totalAmount.toFixed(
             2
-          )}, Available ₹${currentBalance.toFixed(2)}`,
+          )}, Available: ₹${currentBalance.toFixed(2)}`,
         });
       }
 
-
-      // ---------- HOLDINGS ----------
+      // =====================================================
+      // HOLDINGS
+      // =====================================================
 
       const existingHolding = await HoldingsModel.findOne({
         name: name,
@@ -183,8 +271,9 @@ app.post("/newOrder", async (req, res) => {
         await newHolding.save();
       }
 
-
-      // ---------- POSITIONS ----------
+      // =====================================================
+      // POSITIONS
+      // =====================================================
 
       const existingPosition = await PositionsModel.findOne({
         name: name,
@@ -203,8 +292,7 @@ app.post("/newOrder", async (req, res) => {
         existingPosition.avg = newAvg;
         existingPosition.price = stockPrice;
 
-        const pnl =
-          (stockPrice - newAvg) * newQty;
+        const pnl = (stockPrice - newAvg) * newQty;
 
         existingPosition.isLoss = pnl < 0;
 
@@ -224,22 +312,21 @@ app.post("/newOrder", async (req, res) => {
         await newPosition.save();
       }
 
-
-      // ---------- DEDUCT FUNDS ----------
+      // =====================================================
+      // CUT BUY AMOUNT FROM FUNDS
+      // =====================================================
 
       funds.balance = currentBalance - totalAmount;
 
       await funds.save();
     }
 
-
-    // =================================================
+    // =====================================================
     // SELL
-    // =================================================
+    // =====================================================
 
     if (mode === "SELL") {
-
-      // ---------- HOLDINGS ----------
+      // ---------- HOLDINGS CHECK ----------
 
       const existingHolding = await HoldingsModel.findOne({
         name: name,
@@ -259,10 +346,13 @@ app.post("/newOrder", async (req, res) => {
         });
       }
 
+      // =====================================================
+      // UPDATE HOLDINGS
+      // =====================================================
+
       const newQty = oldQty - quantity;
 
       existingHolding.price = stockPrice;
-
 
       if (newQty === 0) {
         await HoldingsModel.deleteOne({
@@ -274,20 +364,19 @@ app.post("/newOrder", async (req, res) => {
         await existingHolding.save();
       }
 
-
-      // ---------- POSITIONS ----------
+      // =====================================================
+      // UPDATE POSITIONS
+      // =====================================================
 
       const existingPosition = await PositionsModel.findOne({
         name: name,
       });
 
       if (existingPosition) {
-        const oldPositionQty =
-          Number(existingPosition.qty);
+        const oldPositionQty = Number(existingPosition.qty);
 
         const newPositionQty =
           oldPositionQty - quantity;
-
 
         if (newPositionQty <= 0) {
           await PositionsModel.deleteOne({
@@ -298,8 +387,7 @@ app.post("/newOrder", async (req, res) => {
           existingPosition.price = stockPrice;
 
           const pnl =
-            (stockPrice -
-              Number(existingPosition.avg)) *
+            (stockPrice - Number(existingPosition.avg)) *
             newPositionQty;
 
           existingPosition.isLoss = pnl < 0;
@@ -308,8 +396,9 @@ app.post("/newOrder", async (req, res) => {
         }
       }
 
-
-      // ---------- ADD SELL MONEY TO FUNDS ----------
+      // =====================================================
+      // ADD SELL AMOUNT TO FUNDS
+      // =====================================================
 
       let funds = await FundsModel.findOne({});
 
@@ -325,10 +414,9 @@ app.post("/newOrder", async (req, res) => {
       await funds.save();
     }
 
-
-    // =================================================
+    // =====================================================
     // SAVE ORDER
-    // =================================================
+    // =====================================================
 
     const newOrder = new OrdersModel({
       name: name,
@@ -339,16 +427,18 @@ app.post("/newOrder", async (req, res) => {
 
     await newOrder.save();
 
-
-    // =================================================
+    // =====================================================
     // RESPONSE
-    // =================================================
+    // =====================================================
+
+    const updatedFunds = await FundsModel.findOne({});
 
     res.status(200).json({
       message: `${mode} order placed successfully`,
-      totalAmount: totalAmount,
+      balance: updatedFunds
+        ? Number(updatedFunds.balance)
+        : 0,
     });
-
   } catch (error) {
     console.log("Order Error:", error);
 
@@ -358,10 +448,7 @@ app.post("/newOrder", async (req, res) => {
   }
 });
 
-
-// =====================================================
-// GET ORDERS
-// =====================================================
+// ==================== GET ORDERS ====================
 
 app.get("/getOrders", async (req, res) => {
   try {
@@ -377,131 +464,7 @@ app.get("/getOrders", async (req, res) => {
   }
 });
 
-
-// =====================================================
-// GET FUNDS
-// =====================================================
-
-app.get("/funds", async (req, res) => {
-  try {
-    let funds = await FundsModel.findOne({});
-
-    if (!funds) {
-      funds = new FundsModel({
-        balance: 0,
-      });
-
-      await funds.save();
-    }
-
-    res.json({
-      balance: Number(funds.balance),
-    });
-  } catch (error) {
-    console.log("Funds Error:", error);
-
-    res.status(500).json({
-      message: "Error fetching funds",
-    });
-  }
-});
-
-
-// =====================================================
-// ADD FUNDS
-// =====================================================
-
-app.post("/addFunds", async (req, res) => {
-  try {
-    const amount = Number(req.body.amount);
-
-    if (!amount || amount <= 0) {
-      return res.status(400).json({
-        message: "Enter a valid amount",
-      });
-    }
-
-    let funds = await FundsModel.findOne({});
-
-    if (!funds) {
-      funds = new FundsModel({
-        balance: 0,
-      });
-    }
-
-    funds.balance =
-      Number(funds.balance) + amount;
-
-    await funds.save();
-
-    res.status(200).json({
-      message: `₹${amount.toFixed(2)} added successfully`,
-      balance: funds.balance,
-    });
-
-  } catch (error) {
-    console.log("Add Funds Error:", error);
-
-    res.status(500).json({
-      message: "Unable to add funds",
-    });
-  }
-});
-
-
-// =====================================================
-// WITHDRAW FUNDS
-// =====================================================
-
-app.post("/withdrawFunds", async (req, res) => {
-  try {
-    const amount = Number(req.body.amount);
-
-    if (!amount || amount <= 0) {
-      return res.status(400).json({
-        message: "Enter a valid amount",
-      });
-    }
-
-    const funds = await FundsModel.findOne({});
-
-    if (!funds || Number(funds.balance) <= 0) {
-      return res.status(400).json({
-        message: "Insufficient balance",
-      });
-    }
-
-    const currentBalance = Number(funds.balance);
-
-    if (amount > currentBalance) {
-      return res.status(400).json({
-        message: `You only have ₹${currentBalance.toFixed(2)}`,
-      });
-    }
-
-    funds.balance =
-      currentBalance - amount;
-
-    await funds.save();
-
-    res.status(200).json({
-      message: `₹${amount.toFixed(2)} withdrawn successfully`,
-      balance: funds.balance,
-    });
-
-  } catch (error) {
-    console.log("Withdraw Error:", error);
-
-    res.status(500).json({
-      message: "Unable to withdraw funds",
-    });
-  }
-});
-
-
-// =====================================================
-// START SERVER
-// =====================================================
+// ==================== START SERVER ====================
 
 mongoose
   .connect(uri)
@@ -513,8 +476,5 @@ mongoose
     });
   })
   .catch((error) => {
-    console.log(
-      "MongoDB connection error:",
-      error
-    );
+    console.log("MongoDB connection error:", error);
   });
