@@ -30,23 +30,30 @@ const Holdings = () => {
 
   // Total Investment
   const totalInvestment = allHoldings.reduce((total, stock) => {
-    return total + Number(stock.avg || 0) * Number(stock.qty || 0);
+    const avg = Number(stock.avg || 0);
+    const qty = Number(stock.qty || 0);
+
+    return total + avg * qty;
   }, 0);
 
   // Current Value
   const currentValue = allHoldings.reduce((total, stock) => {
-    return total + Number(stock.price || 0) * Number(stock.qty || 0);
+    const price = Number(stock.price || 0);
+    const qty = Number(stock.qty || 0);
+
+    return total + price * qty;
   }, 0);
 
   // Total P&L
   const totalProfitLoss = currentValue - totalInvestment;
 
-  // P&L percentage
+  // P&L Percentage
   const profitLossPercentage =
     totalInvestment > 0
       ? (totalProfitLoss / totalInvestment) * 100
       : 0;
 
+  // P&L class
   const totalPLClass = totalProfitLoss >= 0 ? "profit" : "loss";
 
   // Graph data
@@ -56,8 +63,13 @@ const Holdings = () => {
     labels,
     datasets: [
       {
-        label: "Stock Price",
-        data: allHoldings.map((stock) => Number(stock.price || 0)),
+        label: "Current Value",
+        data: allHoldings.map((stock) => {
+          const price = Number(stock.price || 0);
+          const qty = Number(stock.qty || 0);
+
+          return price * qty;
+        }),
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
     ],
@@ -65,10 +77,12 @@ const Holdings = () => {
 
   return (
     <>
+      {/* Holdings Heading */}
       <h3 className="title">
         Holdings ({allHoldings.length})
       </h3>
 
+      {/* Holdings Table */}
       <div className="order-table">
         <table>
           <thead>
@@ -90,15 +104,22 @@ const Holdings = () => {
               const avg = Number(stock.avg || 0);
               const price = Number(stock.price || 0);
 
+              // Investment
               const investment = avg * qty;
+
+              // Current Value
               const curValue = price * qty;
+
+              // Profit / Loss
               const profitLoss = curValue - investment;
 
+              // Profit / Loss class
               const isProfit = profitLoss >= 0;
               const profClass = isProfit ? "profit" : "loss";
 
-              // Fix for day change
+              // Day change
               const dayValue = String(stock.day || "");
+
               const dayClass = dayValue.startsWith("-")
                 ? "loss"
                 : "profit";
@@ -133,30 +154,32 @@ const Holdings = () => {
         </table>
       </div>
 
+      {/* Portfolio Summary */}
       <div className="row">
+        {/* Total Investment */}
         <div className="col">
-          <h5>
-            {totalInvestment.toFixed(2)}
-          </h5>
+          <h5>{totalInvestment.toFixed(2)}</h5>
           <p>Total investment</p>
         </div>
 
+        {/* Current Value */}
         <div className="col">
-          <h5>
-            {currentValue.toFixed(2)}
-          </h5>
+          <h5>{currentValue.toFixed(2)}</h5>
           <p>Current value</p>
         </div>
 
+        {/* Total P&L */}
         <div className="col">
           <h5 className={totalPLClass}>
-            {totalProfitLoss.toFixed(2)}{" "}
-            ({profitLossPercentage.toFixed(2)}%)
+            {totalProfitLoss.toFixed(2)} (
+            {profitLossPercentage.toFixed(2)}%)
           </h5>
+
           <p>P&L</p>
         </div>
       </div>
 
+      {/* Dynamic Holdings Graph */}
       <VerticalGraph data={data} />
     </>
   );
