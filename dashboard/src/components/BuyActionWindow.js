@@ -22,10 +22,15 @@ const BuyActionWindow = ({ uid }) => {
         }
       );
 
+      alert("Buy order placed successfully!");
       closeBuyWindow();
     } catch (err) {
-      console.error("Buy failed", err);
-      alert("Failed to place order. Please try again.");
+      console.error("Buy failed:", err);
+
+      alert(
+        err.response?.data?.message ||
+          "Failed to place order. Please try again."
+      );
     }
   };
 
@@ -44,6 +49,7 @@ const BuyActionWindow = ({ uid }) => {
               type="number"
               name="qty"
               id="qty"
+              min="1"
               onChange={(e) => setStockQuantity(e.target.value)}
               value={stockQuantity}
             />
@@ -56,6 +62,7 @@ const BuyActionWindow = ({ uid }) => {
               type="number"
               name="price"
               id="price"
+              min="0"
               step="0.05"
               onChange={(e) => setStockPrice(e.target.value)}
               value={stockPrice}
@@ -65,7 +72,10 @@ const BuyActionWindow = ({ uid }) => {
       </div>
 
       <div className="buttons">
-        <span>Margin required ₹140.65</span>
+        <span>
+          Margin required ₹
+          {(Number(stockQuantity) * Number(stockPrice)).toFixed(2)}
+        </span>
 
         <div>
           <Link
