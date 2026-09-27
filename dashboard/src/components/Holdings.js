@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { VerticalGraph } from "./VerticalGraph";
+import { watchlist } from "../data/data";
 
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
@@ -11,38 +13,60 @@ const Holdings = () => {
         const res = await axios.get(
           "https://stockverse-mern.onrender.com/allHoldings"
         );
-
         setAllHoldings(res.data);
       } catch (err) {
         console.log("Error fetching holdings:", err);
       }
     };
 
-    // Fetch immediately
     fetchHoldings();
 
-    // Fetch every 5 seconds
     const interval = setInterval(fetchHoldings, 5000);
 
-    // Cleanup
     return () => clearInterval(interval);
   }, []);
 
-  // Total Investment
-  const totalInvestment = allHoldings.reduce((total, stock) => {
-    const avg = Number(stock.avg || 0);
-    const qty = Number(stock.qty || 0);
+  // Get static market price from Watchlist
+  const getCurrentPrice = (stock) => {
+    const marketStock = watchlist.find(
+      (item) => item.name === stock.name
+    );
 
-    return total + avg * qty;
-  }, 0);
+    return Number(
+      marketStock?.price ?? stock.price ?? 0
+    );
+  };
+
+  // Get static day change from Watchlist
+  const getDayChange = (stock) => {
+    const marketStock = watchlist.find(
+      (item) => item.name === stock.name
+    );
+
+    return marketStock?.percent ?? stock.day ?? "0.00%";
+  };
+
+  // Total Investment
+  const totalInvestment = allHoldings.reduce(
+    (total, stock) => {
+      const avg = Number(stock.avg || 0);
+      const qty = Number(stock.qty || 0);
+
+      return total + avg * qty;
+    },
+    0
+  );
 
   // Current Value
-  const currentValue = allHoldings.reduce((total, stock) => {
-    const price = Number(stock.price || 0);
-    const qty = Number(stock.qty || 0);
+  const currentValue = allHoldings.reduce(
+    (total, stock) => {
+      const price = getCurrentPrice(stock);
+      const qty = Number(stock.qty || 0);
 
-    return total + price * qty;
-  }, 0);
+      return total + price * qty;
+    },
+    0
+  );
 
   // Total P&L
   const totalProfitLoss = currentValue - totalInvestment;
@@ -53,8 +77,8 @@ const Holdings = () => {
       ? (totalProfitLoss / totalInvestment) * 100
       : 0;
 
-  // P&L class
-  const totalPLClass = totalProfitLoss >= 0 ? "profit" : "loss";
+  const totalPLClass =
+    totalProfitLoss >= 0 ? "profit" : "loss";
 
   // Graph data
   const labels = allHoldings.map((stock) => stock.name);
@@ -65,7 +89,7 @@ const Holdings = () => {
       {
         label: "Current Value",
         data: allHoldings.map((stock) => {
-          const price = Number(stock.price || 0);
+          const price = getCurrentPrice(stock);
           const qty = Number(stock.qty || 0);
 
           return price * qty;
@@ -77,12 +101,10 @@ const Holdings = () => {
 
   return (
     <>
-      {/* Holdings Heading */}
       <h3 className="title">
         Holdings ({allHoldings.length})
       </h3>
 
-      {/* Holdings Table */}
       <div className="order-table">
         <table>
           <thead>
@@ -102,24 +124,21 @@ const Holdings = () => {
             {allHoldings.map((stock, index) => {
               const qty = Number(stock.qty || 0);
               const avg = Number(stock.avg || 0);
-              const price = Number(stock.price || 0);
+              const price = getCurrentPrice(stock);
 
-              // Investment
               const investment = avg * qty;
-
-              // Current Value
               const curValue = price * qty;
-
-              // Profit / Loss
               const profitLoss = curValue - investment;
 
-              // Profit / Loss class
+              const netChange =
+                avg > 0
+                  ? ((price - avg) / avg) * 100
+                  : 0;
+
               const isProfit = profitLoss >= 0;
               const profClass = isProfit ? "profit" : "loss";
 
-              // Day change
-              const dayValue = String(stock.day || "");
-
+              const dayValue = String(getDayChange(stock));
               const dayClass = dayValue.startsWith("-")
                 ? "loss"
                 : "profit";
@@ -127,13 +146,9 @@ const Holdings = () => {
               return (
                 <tr key={stock._id || index}>
                   <td>{stock.name}</td>
-
                   <td>{qty}</td>
-
                   <td>{avg.toFixed(2)}</td>
-
                   <td>{price.toFixed(2)}</td>
-
                   <td>{curValue.toFixed(2)}</td>
 
                   <td className={profClass}>
@@ -141,11 +156,12 @@ const Holdings = () => {
                   </td>
 
                   <td className={profClass}>
-                    {stock.net}
+                    {netChange >= 0 ? "+" : ""}
+                    {netChange.toFixed(2)}%
                   </td>
 
                   <td className={dayClass}>
-                    {stock.day}
+                    {dayValue}
                   </td>
                 </tr>
               );
@@ -154,32 +170,26 @@ const Holdings = () => {
         </table>
       </div>
 
-      {/* Portfolio Summary */}
       <div className="row">
-        {/* Total Investment */}
         <div className="col">
           <h5>{totalInvestment.toFixed(2)}</h5>
           <p>Total investment</p>
         </div>
 
-        {/* Current Value */}
         <div className="col">
           <h5>{currentValue.toFixed(2)}</h5>
           <p>Current value</p>
         </div>
 
-        {/* Total P&L */}
         <div className="col">
           <h5 className={totalPLClass}>
             {totalProfitLoss.toFixed(2)} (
             {profitLossPercentage.toFixed(2)}%)
           </h5>
-
           <p>P&L</p>
         </div>
       </div>
 
-      {/* Dynamic Holdings Graph */}
       <VerticalGraph data={data} />
     </>
   );
